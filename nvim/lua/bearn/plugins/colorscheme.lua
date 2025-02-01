@@ -28,6 +28,6 @@ return {
         vim.cmd([[set background=dark]])
         vim.api.nvim_set_hl(0, "Function", { fg = "#5f875f" })
         vim.api.nvim_set_hl(0, "Normal", { bg = "#121212" }) -- 1a1d23 alt
-        vim.api.nvim_set_hl(0, "NormalNC", { bg = "#1A1D23" })  -- Lighter background for inactive windows
+        vim.api.nvim_set_hl(0, "NormalNC", { bg = "#1c1c1c" })  -- Lighter background for inactive windows
     end,
 }
