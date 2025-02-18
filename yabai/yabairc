@@ -23,8 +23,8 @@ yabai -m config mouse_drop_action swap
 
 
 # Disable specific apps
-# yabai -m config --add app="^System Settings$" manage=off
+yabai -m rule --add app="^Finder$" manage=off
+yabai -m rule --add app="^Gatality$" manage=off
 # yabai -m config --add app="^TestRun$" manage=off
-
 
 
