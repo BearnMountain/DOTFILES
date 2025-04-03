@@ -17,13 +17,15 @@ return {
                 "bash",
                 "html",
                 "css",
+				"javascript",
                 "json",
                 "rust",
                 "toml",
+				"markdown"
             },
             sync_install = false,
             auto_install = true,
-            hightlight = { enable = true, additional_vim_regex_highlighting = false, },
+            hightlight = { enable = true, additional_vim_regex_highlighting = false },
             indent = { enable = true },
             -- autotag = { enable = true, },
             incremental_selection = {
@@ -35,6 +37,6 @@ return {
                     node_decremental = "<bs>",
                 },
             },
-        })
+        })	
     end,
 }
