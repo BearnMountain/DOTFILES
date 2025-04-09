@@ -1,9 +1,8 @@
-require("bearn.remap")
-require("bearn.core.options")
 
-vim.lsp.set_log_level("OFF") -- Disable LSP logging
+-- Disable LSP logging
+vim.lsp.set_log_level("OFF") 
 
- -- ensures that ts highlighting is active for colorscheme
+-- ensures that ts highlighting is active for colorscheme
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "*",
   callback = function(args)
@@ -24,25 +23,17 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- treats .rcss == .css files and .rml == .html
-
-vim.api.nvim_exec([[
-  augroup filetypedetect
-    autocmd!
-    autocmd BufRead,BufNewFile *.rcss setfiletype css
-    autocmd BufRead,BufNewFile *.rml setfiletype html
-  augroup END
-]], false)
 
 
+-- lsp applies to rmlui
+vim.filetype.add({
+	extension = {
+		rcss = 'css',
+		rml = 'html'
+	}
+})
 
--- vim.api.nvim_create_autocmd({ "BufWritePost" }, {
--- 	pattern = { "*.tex" },
--- 	callback = function()
--- 		vim.cmd("!pdflatex *.tex")
--- 	end,
--- })
-
+-- turns off warnings
 vim.diagnostic.config({
   virtual_text = {
     severity = { min = vim.diagnostic.severity.ERROR } -- Show only errors
@@ -54,3 +45,14 @@ vim.diagnostic.config({
   update_in_insert = false, -- Don't show messages while typing
 })
 
+-- reformats file
+function FormatBuffer()
+    local save_cursor = vim.fn.getpos('.')
+    local save_view = vim.fn.winsaveview()
+
+    vim.api.nvim_command('normal! ggVG')
+    vim.api.nvim_command('normal! ==')
+
+    vim.fn.setpos('.', save_cursor)
+    vim.fn.winrestview(save_view)
+end

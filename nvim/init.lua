@@ -1,3 +1,4 @@
-require("bearn")
-require("bearn.lazy")
-
+require("misc")
+require("options")
+require("remap")
+require("lazy_setup")
