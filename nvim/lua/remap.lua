@@ -23,8 +23,20 @@ vim.keymap.set("n", "<leader>tf", "<cmd>tabnew %<CR>", { desc = "opens current b
 
 -- preferences
 vim.keymap.set({ "i", "x", "n", "s" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save file" })
+vim.keymap.set({"n", "v"}, "<leader>rn", vim.lsp.buf.rename, { desc = "LSP: rename" })
 
 
+-- netrw remappings(native file tree)
+vim.api.nvim_create_autocmd('filetype', {
+	pattern = 'netrw',
+	desc = 'Better mappings for netrw',
+	callback = function()
+		local bind = function(lhs, rhs)
+			vim.keymap.set('n', lhs, rhs, {remap = true, buffer = true})
+		end 
 
-
-
+		bind('a', '%') -- add file
+		bind('r', 'R') -- rename file
+		bind('d', 'D') -- delete file
+	end
+})
