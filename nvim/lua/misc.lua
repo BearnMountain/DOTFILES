@@ -132,88 +132,65 @@ function NewFile()
 	vim.cmd("edit " .. vim.fn.fnameescape(file_path))
 end
 
+vim.api.nvim_create_user_command('Cb', function()
+	local outfile = 'build_error.txt'
+	vim.fn.writefile({}, outfile) -- Clear the file
 
+	local output = {}
 
+	vim.fn.jobstart(
+		'cmake --preset debug && cmake --build --preset debug && ./build/Gatality.app/Contents/MacOS/Gatality',
+		{
+			stdout_buffered = false,
+			on_stdout = function(_, data, _)
+				if type(data) == "table" then
+					for _, line in ipairs(data) do
+						if line and line ~= "" then
+							table.insert(output, line)
+							local percent = line:match("%[ *(%d+%%)%]")
+							if percent then
+								vim.api.nvim_echo({{ "Build Progress: " .. percent, "None" }}, false, {})
+							end
+						end
+					end
+				end
+			end,
+			on_stderr = function(_, data, _)
+				if type(data) == "table" then
+					for _, line in ipairs(data) do
+						if line and line ~= "" then
+							table.insert(output, line)
+						end
+					end
+				end
+			end,
+			on_exit = function()
+				vim.fn.writefile(output, outfile)
 
+				-- Check if file is already open in a window
+				local file_open = false
+				for _, win in ipairs(vim.api.nvim_list_wins()) do
+					local buf = vim.api.nvim_win_get_buf(win)
+					if vim.api.nvim_buf_get_name(buf):find(outfile) then
+						file_open = true
+						vim.api.nvim_set_current_win(win)
+						vim.cmd('edit') -- reload file
+						break
+					end
+				end
 
+				if not file_open then
+					vim.cmd('vsplit ' .. outfile)
+				end
 
-
--- cbuild for logic-graph-creator
--- vim.api.nvim_create_user_command('Cbuild', function()
--- 	local cmd = 'cmake --preset debug && cmake --build --preset debug && ./build/Gatality.app/Contents/MacOS/Gatality'
--- 	local outfile = 'build_error.txt'
---
--- 	-- Run the command
--- 	vim.fn.writefile({}, outfile)  -- clear old output
--- 	local result = vim.fn.system(cmd)
---
--- 	-- Write the result to the output file
--- 	vim.fn.writefile(vim.split(result, '\n'), outfile)
---
--- 	-- Open output file in a new vertical split (optional)
--- 	vim.cmd('vsplit ' .. outfile)
--- end, {})
-
-
-vim.api.nvim_create_user_command('Cbuild', function()
-  local outfile = 'build_error.txt'
-  vim.fn.writefile({}, outfile) -- Clear the file
-
-  local output = {}
-
-  vim.fn.jobstart(
-    'cmake --preset debug && cmake --build --preset debug && ./build/Gatality.app/Contents/MacOS/Gatality',
-    {
-      stdout_buffered = false,
-      on_stdout = function(_, data, _)
-        if type(data) == "table" then
-          for _, line in ipairs(data) do
-            if line and line ~= "" then
-              table.insert(output, line)
-              local percent = line:match("%[ *(%d+%%)%]")
-              if percent then
-                vim.api.nvim_echo({{ "Build Progress: " .. percent, "None" }}, false, {})
-              end
-            end
-          end
-        end
-      end,
-      on_stderr = function(_, data, _)
-        if type(data) == "table" then
-          for _, line in ipairs(data) do
-            if line and line ~= "" then
-              table.insert(output, line)
-            end
-          end
-        end
-      end,
-      on_exit = function()
-        vim.fn.writefile(output, outfile)
-
-        -- Check if file is already open in a window
-        local file_open = false
-        for _, win in ipairs(vim.api.nvim_list_wins()) do
-          local buf = vim.api.nvim_win_get_buf(win)
-          if vim.api.nvim_buf_get_name(buf):find(outfile) then
-            file_open = true
-            vim.api.nvim_set_current_win(win)
-            vim.cmd('edit') -- reload file
-            break
-          end
-        end
-
-        if not file_open then
-          vim.cmd('vsplit ' .. outfile)
-        end
-
-        vim.api.nvim_echo({{ "Build finished.", "None" }}, false, {})
-      end
-    }
-  )
+				vim.api.nvim_echo({{ "Build finished.", "None" }}, false, {})
+			end
+		}
+	)
 end, {})
 
 
--- vim.api.nvim_create_user_command('Cbuild', function()
+-- vim.api.nvim_create_user_command('Cb', function()
 -- 	local outfile = 'build_error.txt'
 -- 	vim.fn.writefile({}, outfile) -- Clear the output file
 --
