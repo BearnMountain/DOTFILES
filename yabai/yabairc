@@ -22,9 +22,12 @@ yabai -m config mouse_action2 resize # right click + drag, resize window
 yabai -m config mouse_drop_action swap
 
 
+# Projects
+yabai -m rule --add app="^FIRST_ATTEMPT_OPENGL$" manage=off
+yabai -m rule --add app="^Gatality$" manage=off
+
 # Disable specific apps
 yabai -m rule --add app="^Finder$" manage=off
-yabai -m rule --add app="^Gatality$" manage=off
 yabai -m rule --add app="^Mail$" manage=off
 yabai -m rule --add app="^System Settings$" manage=off
 yabai -m rule --add app="^Activity Monitor$" manage=off
