@@ -1,0 +1,41 @@
+osascript -e 'tell application id "tracesOf.Uebersicht" to refresh'
+
+# bsp, statck or float configs
+yabai -m config layout bsp
+
+# added screens go to the right or to the bottom
+yabai -m config window_placement second_child
+
+# padding between pains
+yabai -m config top_padding 6
+yabai -m config bottom_padding 6
+yabai -m config left_padding 6
+yabai -m config right_padding 6
+yabai -m config window_gap 6
+
+# mouse settings
+yabai -m config mouse_follows_focus on
+yabai -m config mouse_modifier alt 
+yabai -m config mouse_action1 move # left click + drag, move window
+yabai -m config mouse_action2 resize # right click + drag, resize window
+
+yabai -m config mouse_drop_action swap
+
+yabai -m config external_bar all:32:0
+
+# Projects
+yabai -m rule --add app="^FIRST_ATTEMPT_OPENGL$" manage=off
+yabai -m rule --add app="^Gatality$" manage=off
+
+# Disable specific apps
+yabai -m rule --add app="^Finder$" manage=off
+yabai -m rule --add app="^Mail$" manage=off
+yabai -m rule --add app="^System Settings$" manage=off
+yabai -m rule --add app="^Activity Monitor$" manage=off
+yabai -m rule --add app="^Messages$" manage=off
+yabai -m rule --add app="^Discord$" manage=off
+yabai -m rule --add app="^GitHub Desktop$" manage=off
+
+# yabai -m config --add app="^TestRun$" manage=off
+
+
