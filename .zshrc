@@ -18,10 +18,16 @@ setopt extendedglob
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 
+CLR_TIME="15"
+CLR_USER="121"
+CLR_DIR="47"
+CLR_GIT="105"
+CLR_COMMAND="15"
+
 # Prompt
 set_prompt() {
 	# PROMPT="%B%F{174}%n%f%b%F{15}@%f%F{81}%m %F{47}%~ %F{105}$(git-ps1)%F{15}$ "
-	PROMPT="%B%F{121}%n%f%b%F{15}@%f%F{153}%m %F{47}%~ %F{105}$(git-ps1)%F{15}$ "
+	PROMPT="%F{$CLR_TIME}%* %B%F{$CLR_USER}%n%f%b %F{$CLR_DIR}%~ %F{CLR_GIT}$(git-ps1)%F{$CLR_COMMAND}$ "
 }
 precmd_functions+=(set_prompt)
 
@@ -45,5 +51,3 @@ zle -N zle-line-init
 echo -ne '\e[5 q' # Use beam shape cursor on startup.
 preexec() { echo -ne '\e[5 q' ;} # Use beam shape cursor for each new prompt.
 KEYTIMEOUT=1 # remove lag
-
-
