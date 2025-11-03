@@ -35,13 +35,14 @@ end, { desc = "Format buffer to 80 chars" })
 -- netrw remappings(native file tree)
 vim.api.nvim_create_autocmd('filetype', {
 	pattern = 'netrw',
-	desc = 'Better mappings for netrw',
 	callback = function()
 		local bind = function(lhs, rhs)
 			vim.keymap.set('n', lhs, rhs, {remap = true, buffer = true})
 		end
 
-		bind('a', NewFile) -- add file
+		-- bind('a', NewFile) -- add file
+		bind('a', '%') -- add file
 		bind('r', 'R') -- rename file
 	end
+
 })

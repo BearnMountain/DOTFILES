@@ -24,7 +24,7 @@ yabai -m config mouse_drop_action swap
 yabai -m config external_bar all:32:0
 
 # Projects
-yabai -m rule --add app="^FIRST_ATTEMPT_OPENGL$" manage=off
+yabai -m rule --add app="^VULKAN$" manage=off
 yabai -m rule --add app="^Gatality$" manage=off
 
 # Disable specific apps
@@ -35,7 +35,4 @@ yabai -m rule --add app="^Activity Monitor$" manage=off
 yabai -m rule --add app="^Messages$" manage=off
 yabai -m rule --add app="^Discord$" manage=off
 yabai -m rule --add app="^GitHub Desktop$" manage=off
-
-# yabai -m config --add app="^TestRun$" manage=off
-
 

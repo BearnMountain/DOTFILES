@@ -26,62 +26,77 @@ return {
 
         require("fidget").setup({})
         require("mason").setup()
-        require("mason-lspconfig").setup({
-            ensure_installed = {
-                "lua_ls",
-                "clangd",
-                "bashls",
-                "pyright",
-                "omnisharp",
-                "eslint",
-                "rome",
-                "tailwindcss",
-                "templ",
-                "cssls",
-                "svelte",
-                "emmet_ls",
-                "harper_ls",
-                "rust_analyzer",
-            },
-            handlers = {
-                function(server_name)
-                    require("lspconfig")[server_name].setup {
-                        capabilities = capabilities
-                    }
-                end,
+		local lspconfig = require("lspconfig")
+		require("mason-lspconfig").setup({
+			ensure_installed = {
+				"lua_ls",
+				"clangd",
+				"bashls",
+				"pyright",
+				"omnisharp",
+				"eslint",
+				"rome",
+				"tailwindcss",
+				"templ",
+				"cssls",
+				"svelte",
+				"emmet_ls",
+				"harper_ls",
+				"rust_analyzer",
+				"jdtls",
+			},
+			handlers = {
+				-- Default handler for most servers
+				function(server_name)
+					lspconfig[server_name].setup {
+						capabilities = capabilities
+					}
+				end,
 
-                zls = function()
-                    local lspconfig = require("lspconfig")
-                    lspconfig.zls.setup({
-                        root_dir = lspconfig.util.root_pattern(".git", "build.zig", "zls.json"),
-                        settings = {
-                            zls = {
-                                enable_inlay_hints = true,
-                                enable_snippets = true,
-                                warn_style = true,
-                            },
-                        },
-                    })
-                    vim.g.zig_fmt_parse_errors = 0
-                    vim.g.zig_fmt_autosave = 0
+				-- clangd custom setup
+				clangd = function()
+					lspconfig.clangd.setup({
+						capabilities = capabilities,
+						cmd = {
+							"clangd",
+							"--compile-commands-dir=build",
+							"--header-insertion=never",
+							"--clang-tidy=false",
+						},
+					})
+				end,
 
-                end,
-                ["lua_ls"] = function()
-                    local lspconfig = require("lspconfig")
-                    lspconfig.lua_ls.setup {
-                        capabilities = capabilities,
-                        settings = {
-                            Lua = {
-                                runtime = { version = "Lua 5.1" },
-                                diagnostics = {
-                                    globals = { "bit", "vim", "it", "describe", "before_each", "after_each" },
-                                }
-                            }
-                        }
-                    }
-                end,
-                }
-        })
+				-- lua language server
+				lua_ls = function()
+					lspconfig.lua_ls.setup {
+						capabilities = capabilities,
+						settings = {
+							Lua = {
+								runtime = { version = "Lua 5.1" },
+								diagnostics = {
+									globals = { "bit", "vim", "it", "describe", "before_each", "after_each" },
+								}
+							}
+						}
+					}
+				end,
+
+				-- rust_analyzer with procMacro support
+				rust_analyzer = function()
+					lspconfig.rust_analyzer.setup({
+						capabilities = capabilities,
+						settings = {
+							["rust-analyzer"] = {
+								cargo = { allFeatures = true },
+								checkOnSave = { command = "clippy" },
+								procMacro = { enable = true },
+							}
+						}
+					})
+				end,
+			}
+		})
+
 
         local cmp_select = { behavior = cmp.SelectBehavior.Select }
 

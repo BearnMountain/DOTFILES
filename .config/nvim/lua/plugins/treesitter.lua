@@ -21,7 +21,7 @@ return {
                 "json",
                 "rust",
                 "toml",
-				"markdown"
+				"markdown",
             },
             sync_install = false,
             auto_install = true,

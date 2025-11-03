@@ -58,80 +58,80 @@ function FormatBuffer()
 end
 
 -- creates new file
-function NewFile()
-	local filename = vim.fn.input("Create File: ")
-
-	if filename == "" or filename == nil then return end
-
-	-- get current directory from netrw
-	local cwd = vim.b.netrw_curdir or vim.fn.getcwd()
-	local file_path = cwd .. "/" .. filename
-
-	local function toMacro(filename)
-		local name = filename:match("^.+/(.+)$") or filename
-		name = name:gsub("%.%w+$", "")
-		name = name:gsub("([a-z])([A-Z])", "%1_%2")
-		name = name:gsub("[^%w]", "_"):upper()
-		return name .. "_H"
-	end
-
-	local function classNameFromPath(path)
-		local base = path:match("^.+/(.+)$") or path
-		base = base:gsub("%.h$", ""):gsub("%.cpp$", "") 
-		return base:sub(1,1):upper() .. base:sub(2)
-	end
-
-	-- check for .h files
-	if filename:sub(-2) == ".h" then
-		-- for cpp dev
-		local cpp_filename = filename:gsub("%.h", ".cpp")
-
-		-- creates .cpp and .h file
-		local function createFile(path, filetype)
-			local file = io.open(path, "w")
-			if file then
-				if filetype == 0 then
-					file:write(
-						"#ifndef " .. toMacro(path) .. "\n" ..
-						"#define " .. toMacro(path) .. "\n" ..
-						"\n" ..
-						"class " .. classNameFromPath(path) .. " {\n" ..
-						"public:\n" ..
-						"\t" .. classNameFromPath(path) .. "();\n" ..
-						"\t~" .. classNameFromPath(path) .. "();\n" ..
-						"\n" ..
-						"private:\n" ..
-						"\n" ..
-						"};\n" ..
-						"\n" ..
-						"#endif\n"
-					)
-				else
-					file:write(
-						'#include "' .. filename .. '"\n\n' ..
-						classNameFromPath(path) .. "::" .. classNameFromPath(path) .. "() {\n" ..
-						"\n" ..
-						"}\n\n" ..
-						classNameFromPath(path) .. "::~" .. classNameFromPath(path) .. "() {\n" ..
-						"\n" ..
-						"}\n"
-					)
-				end
-				file:close()
-			end
-		end
-
-		createFile(file_path, 0)
-		createFile(cwd .. "/" .. cpp_filename, 1)
-	else
-		-- creates file if not .h file
-		local file = io.open(file_path, "w")
-		if file then
-			file:close()
-		end
-	end
-	vim.cmd("edit " .. vim.fn.fnameescape(file_path))
-end
+-- function NewFile()
+-- 	local filename = vim.fn.input("Create File: ")
+--
+-- 	if filename == "" or filename == nil then return end
+--
+-- 	-- get current directory from netrw
+-- 	local cwd = vim.b.netrw_curdir or vim.fn.getcwd()
+-- 	local file_path = cwd .. "/" .. filename
+--
+-- 	local function toMacro(filename)
+-- 		local name = filename:match("^.+/(.+)$") or filename
+-- 		name = name:gsub("%.%w+$", "")
+-- 		name = name:gsub("([a-z])([A-Z])", "%1_%2")
+-- 		name = name:gsub("[^%w]", "_"):upper()
+-- 		return name .. "_H"
+-- 	end
+--
+-- 	local function classNameFromPath(path)
+-- 		local base = path:match("^.+/(.+)$") or path
+-- 		base = base:gsub("%.h$", ""):gsub("%.cpp$", "") 
+-- 		return base:sub(1,1):upper() .. base:sub(2)
+-- 	end
+--
+-- 	-- check for .h files
+-- 	if filename:sub(-2) == ".h" then
+-- 		-- for cpp dev
+-- 		local cpp_filename = filename:gsub("%.h", ".cpp")
+--
+-- 		-- creates .cpp and .h file
+-- 		local function createFile(path, filetype)
+-- 			local file = io.open(path, "w")
+-- 			if file then
+-- 				if filetype == 0 then
+-- 					file:write(
+-- 						"#ifndef " .. toMacro(path) .. "\n" ..
+-- 						"#define " .. toMacro(path) .. "\n" ..
+-- 						"\n" ..
+-- 						"class " .. classNameFromPath(path) .. " {\n" ..
+-- 						"public:\n" ..
+-- 						"\t" .. classNameFromPath(path) .. "();\n" ..
+-- 						"\t~" .. classNameFromPath(path) .. "();\n" ..
+-- 						"\n" ..
+-- 						"private:\n" ..
+-- 						"\n" ..
+-- 						"};\n" ..
+-- 						"\n" ..
+-- 						"#endif\n"
+-- 					)
+-- 				else
+-- 					file:write(
+-- 						'#include "' .. filename .. '"\n\n' ..
+-- 						classNameFromPath(path) .. "::" .. classNameFromPath(path) .. "() {\n" ..
+-- 						"\n" ..
+-- 						"}\n\n" ..
+-- 						classNameFromPath(path) .. "::~" .. classNameFromPath(path) .. "() {\n" ..
+-- 						"\n" ..
+-- 						"}\n"
+-- 					)
+-- 				end
+-- 				file:close()
+-- 			end
+-- 		end
+--
+-- 		createFile(file_path, 0)
+-- 		createFile(cwd .. "/" .. cpp_filename, 1)
+-- 	else
+-- 		-- creates file if not .h file
+-- 		local file = io.open(file_path, "w")
+-- 		if file then
+-- 			file:close()
+-- 		end
+-- 	end
+-- 	vim.cmd("edit " .. vim.fn.fnameescape(file_path))
+-- end
 
 vim.api.nvim_create_user_command('Cb', function()
 	local outfile = 'build_error.txt'
@@ -192,97 +192,3 @@ end, {})
 
 -- netrw file sorting
 vim.g.netrw_sort_sequence = '[.]h$, [.]hpp$, [.]c$, [.]cpp$, *'
-
-
-
-
-
-
-
-
-
-
-
--- vim.api.nvim_create_user_command('Cb', function()
--- 	local outfile = 'build_error.txt'
--- 	vim.fn.writefile({}, outfile) -- Clear the output file
---
--- 	local output = {}
---
--- 	vim.fn.jobstart(
--- 		'cmake --preset debug && cmake --build --preset debug && ./build/Gatality.app/Contents/MacOS/Gatality',
--- 		{
--- 			stdout_buffered = false,
--- 			on_stdout = function(_, data, _)
--- 				if type(data) == "table" then
--- 					for _, line in ipairs(data) do
--- 						if line and line ~= "" then
--- 							table.insert(output, line)
--- 							local percent = line:match("%[ *(%d+%%)%]")
--- 							if percent then
--- 								vim.api.nvim_echo({{ "Build Progress: " .. percent, "None" }}, false, {})
--- 							end
--- 						end
--- 					end
--- 				end
--- 			end,
--- 			on_stderr = function(_, data, _)
--- 				if type(data) == "table" then
--- 					for _, line in ipairs(data) do
--- 						if line and line ~= "" then
--- 							table.insert(output, line)
--- 						end
--- 					end
--- 				end
--- 			end,
--- 			on_exit = function()
--- 				vim.fn.writefile(output, outfile)
--- 				vim.cmd('vsplit ' .. outfile)
--- 				vim.api.nvim_echo({{ "Build finished.", "None" }}, false, {})
--- 			end
--- 		}
--- 	)
--- end, {})
-
-
-
--- vim.api.nvim_create_user_command('Cbuild', function()
--- 	local outfile = 'build_error.txt'
--- 	local output = {}
---
--- 	vim.fn.writefile({}, outfile) -- Clear output file
---
--- 	vim.system(
--- 		{ 'bash', '-c', 'cmake --preset debug && cmake --build --preset debug && ./build/Gatality.app/Contents/MacOS/Gatality' },
--- 		{
--- 			stdout = function(_, data)
--- 				if data then
--- 					for _, line in ipairs(data) do
--- 						table.insert(output, line)
--- 						vim.fn.chansend(vim.api.nvim_get_current_buf(), line .. "\n")
---
--- 						-- Show progress in command line if [ 88%] found
--- 						local percent = line:match("%[ *(%d+%%)%]")
--- 						if percent then
--- 							vim.api.nvim_echo({{ "Build Progress: " .. percent, "None" }}, false, {})
--- 						end
--- 					end
--- 				end
--- 			end,
--- 			stderr = function(_, data)
--- 				if data then
--- 					for _, line in ipairs(data) do
--- 						table.insert(output, line)
--- 					end
--- 				end
--- 			end,
--- 			text = true,
--- 			cwd = vim.fn.getcwd(),
--- 		},
--- 		function()
--- 			vim.fn.writefile(output, outfile)
--- 			vim.cmd('vsplit ' .. outfile)
--- 			vim.api.nvim_echo({{ "Build finished.", "None" }}, false, {})
--- 		end
--- 	)
--- end, {})
